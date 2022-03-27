@@ -17,70 +17,50 @@ from keras.callbacks import ModelCheckpoint
 # My function
 def myGetModel(data):
     model = models.Sequential()
-    # padding parameter to keep the activation mapped by each filter has the same 
-size as the input
-    model.add(layers.Conv2D(32, kernel_size=3, padding = "same", activation='relu',
-input_shape=(32,32,3)))
+    # padding parameter to keep the activation mapped by each filter has the same size as the input
+    model.add(layers.Conv2D(32, kernel_size=3, padding = "same", activation='relu', input_shape=(32,32,3)))
     model.add(layers.Dropout(0.5))
-    model.add(layers.Conv2D(32, kernel_size=3, padding = "same", 
-activation='relu'))
+    model.add(layers.Conv2D(32, kernel_size=3, padding = "same", activation='relu'))
     model.add(layers.MaxPooling2D((2,2)))
     model.add(layers.Dropout(0.25))
-    model.add(layers.Conv2D(64, kernel_size=3, padding = "same", 
-activation='relu'))
+    model.add(layers.Conv2D(64, kernel_size=3, padding = "same", activation='relu'))
     model.add(layers.Dropout(0.5))
-    model.add(layers.Conv2D(64, kernel_size=3, padding = "same", 
-activation='relu'))
+    model.add(layers.Conv2D(64, kernel_size=3, padding = "same", activation='relu'))
     model.add(layers.MaxPooling2D((2,2)))
     model.add(layers.Dropout(0.25))
     model.add(layers.Flatten())
     model.add(layers.Dense(32, activation='relu'))
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(10, activation='softmax'))
-    model.compile(optimizer="adam", loss='categorical_crossentropy', 
-metrics=['accuracy'])
+    model.compile(optimizer="adam", loss='categorical_crossentropy', metrics=['accuracy'])
     return model
+
 def myFitModel(model,data):
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=20)
-    checkpoint = ModelCheckpoint("best_model.hdf5", monitor='loss', verbose=1, 
-save_best_only=True, mode='min', period=1)
-    model.fit(data.x_train, data.y_train, epochs=100, validation_data=(data.x_test,
-data.y_test),callbacks=[es,checkpoint])
+    checkpoint = ModelCheckpoint("best_model.hdf5", monitor='loss', verbose=1, save_best_only=True, mode='min', period=1)
+    model.fit(data.x_train, data.y_train, epochs=100, validation_data=(data.x_test,data.y_test),callbacks=[es,checkpoint])
     return model
 # In *older* versions of Tensorflow/Keras you may need to adjust the image 
 # dimension ordering. Read about channel ordering here:
-#    https://machinelearningmastery.com/a-gentle-introduction-to-channels-first-
-and-channels-last-image-formats-for-deep-learning/
-# This is the main function. You need to write the getModel and fitModel functions 
-to pass to this.
+#    https://machinelearningmastery.com/a-gentle-introduction-to-channels-first-and-channels-last-image-formats-for-deep-learning/
+# This is the main function. You need to write the getModel and fitModel functions to pass to this.
 # Call your functions 'myGetModel' and 'myFitModel'.
-# The getModel function should accept an object of the CIFAR class, and return a 
-compiled Keras CNN model. 
-# In this function you will specify the network structure (including 
-regularization) and the optimizer to 
-# be used (and its parameters like learning rate), and run compile the model (in 
-the Keras sense of running 
+# The getModel function should accept an object of the CIFAR class, and return a compiled Keras CNN model. 
+# In this function you will specify the network structure (including regularization) and the optimizer to 
+# be used (and its parameters like learning rate), and run compile the model (in the Keras sense of running 
 # model.compile).
-# The fitModel function should accect two arguments. The first is the CNN model you
-return from your getModel 
-# function, and the second is the CIFAR classed data object. It will return a 
-trained Keras CNN model, which 
-# will then be applied to the test data. In this function you will train the model,
-using the Keras model.fit 
-# function. You will need to specify all parameters of the training algorithm 
-(batch size, etc), and the 
-# callbacks you will use (EarlyStopping and ModelCheckpoint). You will need to make
-sure you save and load 
+# The fitModel function should accect two arguments. The first is the CNN model youreturn from your getModel 
+# function, and the second is the CIFAR classed data object. It will return a trained Keras CNN model, which 
+# will then be applied to the test data. In this function you will train the model,using the Keras model.fit 
+# function. You will need to specify all parameters of the training algorithm (batch size, etc), and the 
+# callbacks you will use (EarlyStopping and ModelCheckpoint). You will need to makesure you save and load 
 # into the model the weight values of its best performing epoch.
+
 def runImageClassification(getModel=None,fitModel=None,seed=7):
-    # Fetch data. You may need to be connected to the internet the first time this 
-is done.
-    # After the first time, it should be available in your system. On the off 
-chance this
-    # is not the case on your system and you find yourself repeatedly downloading 
-the data, 
-    # you should change this code so you can load the data once and pass it to this
-function. 
+    # Fetch data. You may need to be connected to the internet the first time this is done.
+    # After the first time, it should be available in your system. On the off chance this
+    # is not the case on your system and you find yourself repeatedly downloading the data, 
+    # you should change this code so you can load the data once and pass it to thisfunction. 
     print("Preparing data...")
     data=CIFAR(seed)
         
@@ -94,27 +74,19 @@ function.
     print("Evaluating model...")
     score = model.evaluate(data.x_test, data.y_test, verbose=0)
     print('Test accuracy:', score[1])
-# This is the class that wraps the CIFAR data. You will probably need to be 
-connected to the
-# internet the first time you create an object of this class, as the data will be 
-downloaded.
-# After that, the data should be stored by Keras and no downloading will be 
-required. 
-# Important fields that you will need to use are: x_train, y_train, x_valid, 
-y_valid, input_dim and 
-# num_classes. The first four of these are the training and validation data (split 
-into features and
-# target). Note that these have been made ready for use with a Keras network - 
-check out the code
-# if you are interested. The last two are the number of input features and the 
-number of target 
+# This is the class that wraps the CIFAR data. You will probably need to be connected to the
+# internet the first time you create an object of this class, as the data will be downloaded.
+# After that, the data should be stored by Keras and no downloading will be required. 
+# Important fields that you will need to use are: x_train, y_train, x_valid, y_valid, input_dim and 
+# num_classes. The first four of these are the training and validation data (split into features and
+# target). Note that these have been made ready for use with a Keras network - check out the code
+# if you are interested. The last two are the number of input features and the number of target 
 # classes. These will be needed when defining your CNN.
-# The only public method is the showImages function, which you can use to see some 
-labelled images
+# The only public method is the showImages function, which you can use to see some labelled images
 # from the (validation) data.
-# Remember that the x_test and y_test fields will be blank when your functions are 
-run in evaluation -
+# Remember that the x_test and y_test fields will be blank when your functions are run in evaluation -
 # so you cannot peek at these cases!
+
 class CIFAR:
     def __init__(self,seed=0):
         # Get and split data
